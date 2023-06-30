@@ -1,30 +1,25 @@
-name: Get New File Name
-
 on:
   push:
     branches:
       - master
 
 jobs:
-  get-file-name:
+  build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      
-    - name: Get diff of commits
-      id: diff
-      run: echo "::set-output name=diff::$(git diff --name-only HEAD^..HEAD)"
-      
-    - name: Extract new file name
-      id: extract-file-name
-      run: |
-        echo "${{ steps.diff.outputs.diff }}" | while read -r line; do
-          if [[ $line =~ ^\+([^/]*)/ ]]; then
-            echo "::set-output name=file_name::${BASH_REMATCH[1]}"
-          fi
-        done
-      
-    - name: Print new file name
-      run: echo "New file name: ${{ steps.extract-file-name.outputs.file_name }}"
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get file changes
+        id: file_changes
+        run: |
+          echo ::set-output name=added_files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '.*')
+          echo ::set-output name=deleted_files::$(git diff --name-only ${{ github.sha }} ${{ github.event.before }} | grep -E '.*')
+          echo ::set-output name=modified_files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '.*')
+
+      - name: Print file changes
+        run: |
+          echo "Added files: ${{ steps.file_changes.outputs.added_files }}"
+          echo "Deleted files: ${{ steps.file_changes.outputs.deleted_files }}"
+          echo "Modified files: ${{ steps.file_changes.outputs.modified_files }}"
