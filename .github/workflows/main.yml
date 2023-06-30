@@ -52,9 +52,7 @@ jobs:
             cat origin_all_modified_files.txt
             echo "------"
             cat abs_all_modified_files.txt
-            cd aaa
-            ll
-            cd ..
+            ls -l aaa
 
       - name: deleted_files的文件
         run: |
