@@ -35,34 +35,71 @@ jobs:
           for file in ${{ steps.changed-files.outputs.added_files }}; do
             echo "$file" >> origin_Added_Modified.txt
             filename=$(basename "$file")
-            echo "$filename" >> Added_Modified.txt
+            echo "$filename" >> Added_Renamed_Modified.txt
           done
           cat origin_Added_Modified.txt
+
+      - name: 只Renamed的文件
+        run: |
+          for file in ${{ steps.changed-files.outputs.renamed_files }}; do
+            echo "$file" >> origin_Renamed.txt
+            filename=$(basename "$file")
+            echo "$filename" >> Added_Renamed_Modified.txt
+          done
+          cat origin_Renamed.txt
+
       - name: 只Modified的文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
             echo "$file" >> origin_Added_Modified.txt
             filename=$(basename "$file")
-            echo "$filename" >> Added_Modified.txt
+            echo "$filename" >> Added_Renamed_Modified.txt
           done
           cat origin_Added_Modified.txt
+
       - name: 只Deleted的文件
         run: |
           for file in ${{ steps.changed-files.outputs.deleted_files }}; do
             filename=$(basename "$file")
-            if grep -q "$filename" Added_Modified.txt; then
+            if grep -q "$filename" Added_Renamed_Modified.txt; then
               echo "Filename $filename already exists in Added_Modified.txt"
               exit 0
             fi
             echo "$filename" >> Deleted.txt
           done
           cat Deleted.txt
+
       - name: 得到绝对名称
         run: |
           while IFS= read -r line; do
             echo "$(basename "$line")"
           done < Added_Modified.txt > modified_file_names.txt
           cat modified_file_names.txt
+
+      - name: all_modified_files的文件
+        run: |
+            for file in ${{ steps.changed-files.outputs.all_modified_files }}; do
+                echo "$file" >> origin_all_modified_files.txt
+                filename=$(basename "$file")
+                echo "$filename" >> abs_all_modified_files.txt
+            done
+            cat origin_all_modified_files.txt
+            echo "------"
+            cat abs_all_modified_files.txt
+
+      - name: deleted_files的文件
+        run: |
+            for file in ${{ steps.changed-files.outputs.deleted_files }}; do
+                echo "$file" >> origin_deleted_files.txt
+                filename=$(basename "$file")
+                echo "$filename" >> abs_deleted_files.txt
+            done
+            cat origin_deleted_files.txt
+            echo "------"
+            cat abs_deleted_files.txt
+
+
+
       - name: 开始修改文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
