@@ -51,7 +51,7 @@ jobs:
             echo "------"
             cat abs_all_modified_files.txt
             echo "------"
-            ls -l aaa
+            ls -1 aaa
 
       - name: deleted_files的文件
         run: |
