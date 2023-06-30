@@ -53,7 +53,7 @@ jobs:
                   echo "The file $filename is in .py format."
                   filename_replace=$(echo "$filename" | sed 's/\.py$//')
                   response=$(aws lambda get-function --function-name "$filename_replace" --output json)
-
+                  echo "$response" | jq .
                   # 判断返回的 JSON 是否包含有效的函数信息
                   if [[ $response == *"Function not found"* ]]; then
                       echo "Lambda function does not exist for $filename"
