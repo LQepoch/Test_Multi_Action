@@ -1,33 +1,30 @@
-name: Get Push Changes
+name: Get New File Name
+
 on:
   push:
     branches:
       - master
 
 jobs:
-  get_changes:
+  get-file-name:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Get Push Changes
-        run: |
-          CHANGED_FILES=$(git diff --name-only origin/master HEAD | awk '/^[A|D|M]/ {print $2}')
-          NEW_FILES=$(git diff --name-only origin/master HEAD | awk '/^[A]/ {print $2}')
-          MODIFIED_FILES=$(git diff --name-only origin/master HEAD | awk '/^[M]/ {print $2}')
-          DELETED_FILES=$(git diff --name-only origin/master HEAD | awk '/^[D]/ {print $2}')
-
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          echo "New files:"
-          echo "$NEW_FILES"
-
-          echo "Modified files:"
-          echo "$MODIFIED_FILES"
-
-          echo "Deleted files:"
-          echo "$DELETED_FILES"
-
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Get diff of commits
+      id: diff
+      run: echo "::set-output name=diff::$(git diff --name-only HEAD^..HEAD)"
+      
+    - name: Extract new file name
+      id: extract-file-name
+      run: |
+        echo "${{ steps.diff.outputs.diff }}" | while read -r line; do
+          if [[ $line =~ ^\+([^/]*)/ ]]; then
+            echo "::set-output name=file_name::${BASH_REMATCH[1]}"
+          fi
+        done
+      
+    - name: Print new file name
+      run: echo "New file name: ${{ steps.extract-file-name.outputs.file_name }}"
