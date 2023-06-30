@@ -39,15 +39,6 @@ jobs:
           done
           cat origin_Added_Modified.txt
 
-      - name: 只Renamed的文件
-        run: |
-          for file in ${{ steps.changed-files.outputs.renamed_files }}; do
-            echo "$file" >> origin_Renamed.txt
-            filename=$(basename "$file")
-            echo "$filename" >> Added_Renamed_Modified.txt
-          done
-          cat origin_Renamed.txt
-
       - name: 只Modified的文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
