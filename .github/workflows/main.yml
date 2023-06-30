@@ -53,7 +53,7 @@ jobs:
           while IFS= read -r line; do
             echo "$(basename "$line")"
           done < modified_files.txt > modified_file_names.txt
-
+          cat modified_files.txt
       - name: 开始修改文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
