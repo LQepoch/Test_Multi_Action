@@ -64,7 +64,7 @@ jobs:
         run: |
           while IFS= read -r line; do
             echo "$(basename "$line")"
-          done < Added_Modified.txt > modified_file_names.txt
+          done < Added_Renamed_Modified.txt > modified_file_names.txt
           cat modified_file_names.txt
 
       - name: all_modified_files的文件
