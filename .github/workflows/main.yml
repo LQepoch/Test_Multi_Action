@@ -80,38 +80,3 @@ jobs:
             cat abs_deleted_files.txt
 
 
-      - name: Check Lambda function existence and update/create if needed
-        id: check-functions
-        run: |
-          # Define the list of Lambda functions to check
-          functions=("Function1" "Function2" "Function3")
-
-          # Loop through the functions and check existence
-          for function in "${functions[@]}"
-          do
-            response=$(aws lambda get-function --function-name "$function" --output json)
-            if [[ "${response}" == *"FunctionNotFound"* ]]; then
-              echo "::set-output name=${function}_exists::false"
-            else
-              echo "::set-output name=${function}_exists::true"
-            fi
-          done
-
-      - name: Create or update Lambda functions
-        run: |
-          # Loop through the functions and create/update as necessary
-          functions=("Function1" "Function2" "Function3")
-          for function in "${functions[@]}"
-          do
-            exists="${{ steps.check-functions.outputs.${function}_exists }}"
-            if [[ "$exists" == 'false' ]]; then
-              # Create the Lambda function
-              echo "Creating $function"
-              # Add the create-function command here with the appropriate parameters
-            else
-              # Update the Lambda function code
-              echo "Updating $function"
-              # Add the update-function-code command here with the appropriate parameters
-            fi
-          done    
-
