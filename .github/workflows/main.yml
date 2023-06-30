@@ -49,8 +49,8 @@ jobs:
                 filename=$(basename "$file")
                 echo "$filename" >> abs_all_modified_files.txt
                 if [[ $filename == *.py ]]; then
-                  filename_replace = filename.replace(".py", "")
                   echo "The file $filename is in .py format."
+                  filename_replace=filename.replace(".py", "")
                   response=$(aws lambda get-function --function-name "$filename_replace" --output json)
                   echo "::set-output name=response::$response"
                 else
