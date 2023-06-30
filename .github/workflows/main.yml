@@ -100,6 +100,7 @@ jobs:
       - name: Create or update Lambda functions
         run: |
           # Loop through the functions and create/update as necessary
+          functions=("Function1" "Function2" "Function3")
           for function in "${functions[@]}"
           do
             exists="${{ steps.check-functions.outputs.${function}_exists }}"
