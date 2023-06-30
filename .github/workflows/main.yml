@@ -42,16 +42,15 @@ jobs:
                 echo "$filename" >> abs_all_modified_files.txt
                 if [[ $filename == *.py ]]; then
                   echo "The file $filename is in .py format."
-                  rm aaa/$filename
                 else
                   echo "The file $filename is not in .py format."
-                  rm aaa/$filename
                 fi
             done
           
             cat origin_all_modified_files.txt
             echo "------"
             cat abs_all_modified_files.txt
+            echo "------"
             ls -l aaa
 
       - name: deleted_files的文件
@@ -65,4 +64,4 @@ jobs:
             echo "------"
             cat abs_deleted_files.txt
 
-
+                 # rm aaa/$filename
