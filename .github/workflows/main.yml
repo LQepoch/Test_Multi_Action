@@ -30,7 +30,12 @@ jobs:
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
-
+      - name: 只Added的文件
+        run: |
+          for file in ${{ steps.changed-files.outputs.added_files }}; do
+            echo "$file" >> modified_files.txt
+          done
+          cat modified_files.txt
       - name: 只Modified的文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
@@ -43,12 +48,12 @@ jobs:
             echo "$file" >> modified_files.txt
           done
           cat modified_files.txt
-      - name: 只Added的文件
+      - name: 得到绝对名称
         run: |
-          for file in ${{ steps.changed-files.outputs.added_files }}; do
-            echo "$file" >> modified_files.txt
-          done
-          cat modified_files.txt
+          while IFS= read -r line; do
+            echo "$(basename "$line")"
+          done < modified_files.txt > modified_file_names.txt
+
       - name: 开始修改文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
