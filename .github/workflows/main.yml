@@ -2,7 +2,7 @@ name: Get Push Changes
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   get_changes:
