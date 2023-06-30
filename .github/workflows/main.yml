@@ -43,49 +43,49 @@ jobs:
 
       - name: all_modified_files的文件
         run: |
-            for file in ${{ steps.changed-files.outputs.all_modified_files }}; do
-                echo "$file" >> origin_all_modified_files.txt
-                mv $file aaa/
-                filename=$(basename "$file")
-                echo "$filename" >> abs_all_modified_files.txt
-                if [[ $filename == *.py ]]; then
+          for file in ${{ steps.changed-files.outputs.all_modified_files }}; do
+              echo "$file" >> origin_all_modified_files.txt
+              mv $file aaa/
+              filename=$(basename "$file")
+              echo "$filename" >> abs_all_modified_files.txt
           
+              if [[ $filename == *.py ]]; then
                   echo "The file $filename is in .py format."
                   filename_replace=$(echo "$filename" | sed 's/\.py$//')
-                  response=$(aws lambda get-function --function-name "$filename_replace" --output json)
-                  echo "$response" | jq .
-                  # 判断返回的 JSON 是否包含有效的函数信息
+                  response=$(aws lambda get-function --function-name "$filename_replace" --output json 2>&1)
+          
                   if [[ $response == *"Function not found"* ]]; then
                       echo "Lambda function does not exist for $filename"
+                      exit 1
                   elif [ "$(echo "$response" | jq '.Configuration | has("FunctionArn")')" = true ]; then
-                    # 提取 FunctionArn 字段的值
-                    functionArn=$(echo "$response" | jq -r '.Configuration.FunctionArn')
-                    # 检查 FunctionArn 是否不为空
-                    if [ -n "$functionArn" ]; then
-                      echo "Lambda 函数存在"
-                      # 更新 Lambda 函数代码
-                      cd aaa
-                      mv $filename lambda_function.py
-                      zip -r code.zip lambda_function.py
-                      response=$(aws lambda update-function-code \
-                        --function-name "$functionArn" \
-                        --zip-file fileb://code.zip \
-                        --output json)
-                      function_name=$(echo $response | python3 -c "import sys, json; print(json.load(sys.stdin)['FunctionName'])")
-                      echo "Updated Lambda function: $function_name success"
-                      rm code.zip lambda_function.py
-                      cd ..
-                    else
-                      echo "Lambda 函数不存在"
-                    fi
-                  else
-                    echo "无效的 JSON 返回"
+                      functionArn=$(echo "$response" | jq -r '.Configuration.FunctionArn')
           
+                      if [ -n "$functionArn" ]; then
+                          echo "Lambda function exists for $filename"
+                          cd aaa
+                          mv $filename lambda_function.py
+                          zip -r code.zip lambda_function.py
+                          response=$(aws lambda update-function-code \
+                              --function-name "$functionArn" \
+                              --zip-file fileb://code.zip \
+                              --output json)
+                          function_name=$(echo $response | python3 -c "import sys, json; print(json.load(sys.stdin)['FunctionName'])")
+                          echo "Updated Lambda function: $function_name success"
+                          rm code.zip lambda_function.py
+                          cd ..
+                      else
+                          echo "Lambda function does not exist for $filename"
+                          exit 1
+                      fi
+                  else
+                      echo "Invalid JSON response"
+                      exit 1
                   fi
-                else
+              else
                   echo "The file $filename is not in .py format."
-                fi
-            done
+              fi
+          done
+
           
             cat origin_all_modified_files.txt
             echo "------"
