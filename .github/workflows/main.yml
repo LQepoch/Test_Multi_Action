@@ -40,14 +40,15 @@ jobs:
       - name: 只Deleted的文件
         run: |
           for file in ${{ steps.changed-files.outputs.deleted_files }}; do
-            echo "$file was deleted_files"
+            echo "$file" >> modified_files.txt
           done
+          cat modified_files.txt
       - name: 只Added的文件
         run: |
           for file in ${{ steps.changed-files.outputs.added_files }}; do
-            echo "$file was changed"
+            echo "$file" >> modified_files.txt
           done
-
+          cat modified_files.txt
       - name: 开始修改文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
