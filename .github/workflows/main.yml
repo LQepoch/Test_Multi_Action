@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "Actor: ${{ toJson(steps) }}"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
+            echo "$file"
           done
           mkdir aaa
 
@@ -52,6 +52,9 @@ jobs:
             cat origin_all_modified_files.txt
             echo "------"
             cat abs_all_modified_files.txt
+            cd aaa
+            ll
+            cd ..
 
       - name: deleted_files的文件
         run: |
