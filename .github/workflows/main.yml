@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - master
 jobs:
   job2:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
