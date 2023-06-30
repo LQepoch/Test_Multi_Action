@@ -34,8 +34,9 @@ jobs:
       - name: 只Modified的文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
-            echo "$file was modified_files"
+            echo "$file" >> modified_files.txt
           done
+          cat modified_files.txt
       - name: 只Deleted的文件
         run: |
           for file in ${{ steps.changed-files.outputs.deleted_files }}; do
@@ -56,6 +57,9 @@ jobs:
             ls
             rm "$(dirname "$file")/${{ env.NEW_FILENAME }}"
           done
-      - name: 开始修改文件
-        run: |
-          ls
+      - name: 只下载更新的文件
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            README.md
+          sparse-checkout-cone-mode: false
