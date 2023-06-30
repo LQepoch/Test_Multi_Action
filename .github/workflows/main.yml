@@ -52,7 +52,24 @@ jobs:
                   echo "The file $filename is in .py format."
                   filename_replace=$(echo "$filename" | sed 's/\.py$//')
                   response=$(aws lambda get-function --function-name "$filename_replace" --output json)
-                  echo "::set-output name=response::$response"
+                  # 判断返回的 JSON 是否包含有效的函数信息
+                  if [ -n "$(echo "$response" | jq '.Configuration')" ]; then
+                    # 提取 FunctionArn 字段的值
+                    functionArn=$(echo "$response" | jq -r '.Configuration.FunctionArn')
+                    # 检查 FunctionArn 是否不为空
+                    if [ -n "$functionArn" ]; then
+                      echo "Lambda 函数存在"
+                        # 更新 Lambda 函数代码
+                          mv aaa.py lambda_function.py
+                          zip -r code.zip lambda_function.py
+                          aws lambda update-function-code --function-name "$functionArn" --zip-file fileb://aaa/code.zip
+                          rm code.zip lambda_function.py
+                    else
+                      echo "Lambda 函数不存在"
+                    fi
+                  else
+                    echo "无效的 JSON 返回"
+                  fi
                 else
                   echo "The file $filename is not in .py format."
                 fi
