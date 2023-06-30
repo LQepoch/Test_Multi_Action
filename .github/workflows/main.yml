@@ -1,25 +1,59 @@
+name: CI
+
 on:
   push:
     branches:
       - master
 
+# -------------------------------
+#  Optionally run on other events
+# -------------------------------
+#  schedule:
+#     - cron: '0 0 * * *'
+#
+#  release:
+#    types: [published]
+#
+#  push:
+#    tags:
+#      - '**'
+#
+# ...and many more
+
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
+  # -------------------------------------------------------------
+  # Using GitHub's API is not supported for push events
+  # -------------------------------------------------------------
+  # 
+  # ----------------------------------------------------------------------------------------------
+  # Using local .git directory
+  # ----------------------------------------------------------------------------------------------
+  # Event `push`: Compare the preceding remote commit -> to the current commit of the main branch 
+  # ----------------------------------------------------------------------------------------------
+  job2:
+    runs-on: ubuntu-latest  # windows-latest | macos-latest
+    name: Test changed-files
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-      - name: Get file changes
-        id: file_changes
-        run: |
-          echo ::set-output name=added_files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '.*')
-          echo ::set-output name=deleted_files::$(git diff --name-only ${{ github.sha }} ${{ github.event.before }} | grep -E '.*')
-          echo ::set-output name=modified_files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '.*')
+      # Example 1
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v37
 
-      - name: Print file changes
+      # NOTE: `since_last_remote_commit: true` is implied by default and falls back to the previous local commit.
+
+      - name: List all changed files
         run: |
-          echo "Added files: ${{ steps.file_changes.outputs.added_files }}"
-          echo "Deleted files: ${{ steps.file_changes.outputs.deleted_files }}"
-          echo "Modified files: ${{ steps.file_changes.outputs.modified_files }}"
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+      # Example 2: See above
+      ...
+
+      # Example 3: See above
+      ...
