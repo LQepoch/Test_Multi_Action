@@ -14,10 +14,10 @@ jobs:
 
       - name: Get Push Changes
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | awk '/^[A|D|M]/ {print $2}')
-          NEW_FILES=$(git diff --name-only HEAD^ HEAD | awk '/^[A]/ {print $2}')
-          MODIFIED_FILES=$(git diff --name-only HEAD^ HEAD | awk '/^[M]/ {print $2}')
-          DELETED_FILES=$(git diff --name-only HEAD^ HEAD | awk '/^[D]/ {print $2}')
+          CHANGED_FILES=$(git diff --name-only origin/master HEAD | awk '/^[A|D|M]/ {print $2}')
+          NEW_FILES=$(git diff --name-only origin/master HEAD | awk '/^[A]/ {print $2}')
+          MODIFIED_FILES=$(git diff --name-only origin/master HEAD | awk '/^[M]/ {print $2}')
+          DELETED_FILES=$(git diff --name-only origin/master HEAD | awk '/^[D]/ {print $2}')
 
           echo "Changed files:"
           echo "$CHANGED_FILES"
