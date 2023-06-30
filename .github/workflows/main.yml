@@ -50,6 +50,8 @@ jobs:
             new_filename="lam.py"
             mv "$file" "$(dirname "$file")/$new_filename"
             echo "$filename was renamed to $new_filename"
+            rm $new_filename"
+            ls
           done
       - name: 开始修改文件
         run: |
