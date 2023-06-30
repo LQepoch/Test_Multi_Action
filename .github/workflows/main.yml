@@ -14,19 +14,20 @@ jobs:
 
       - name: Get Push Changes
         run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | awk '/^[A|D|M]/ {print $2}')
-          NEW_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | awk '/^[A]/ {print $2}')
-          MODIFFER_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | awk '/^[M]/ {print $2}')
-          DELETED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | awk '/^[D]/ {print $2}')
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | awk '/^[A|D|M]/ {print $2}')
+          NEW_FILES=$(git diff --name-only HEAD^ HEAD | awk '/^[A]/ {print $2}')
+          MODIFIED_FILES=$(git diff --name-only HEAD^ HEAD | awk '/^[M]/ {print $2}')
+          DELETED_FILES=$(git diff --name-only HEAD^ HEAD | awk '/^[D]/ {print $2}')
 
           echo "Changed files:"
           echo "$CHANGED_FILES"
-          
+
           echo "New files:"
           echo "$NEW_FILES"
 
-          echo "Modifer files:"
-          echo "$Modifer_FILES"
-          
+          echo "Modified files:"
+          echo "$MODIFIED_FILES"
+
           echo "Deleted files:"
           echo "$DELETED_FILES"
+
