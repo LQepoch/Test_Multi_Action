@@ -55,7 +55,9 @@ jobs:
                   response=$(aws lambda get-function --function-name "$filename_replace" --output json)
 
                   # 判断返回的 JSON 是否包含有效的函数信息
-                  if [ -n "$(echo "$response" | jq '.Configuration.FunctionArn')" ]; then
+                  if [[ $response == *"Function not found"* ]]; then
+                      echo "Lambda function does not exist for $filename"
+                  elif [ "$(echo "$response" | jq '.Configuration | has("FunctionArn")')" = true ]; then
                     # 提取 FunctionArn 字段的值
                     functionArn=$(echo "$response" | jq -r '.Configuration.FunctionArn')
                     # 检查 FunctionArn 是否不为空
