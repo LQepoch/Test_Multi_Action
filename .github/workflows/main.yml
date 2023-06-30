@@ -59,11 +59,13 @@ jobs:
                     # 检查 FunctionArn 是否不为空
                     if [ -n "$functionArn" ]; then
                       echo "Lambda 函数存在"
-                        # 更新 Lambda 函数代码
+                          # 更新 Lambda 函数代码
+                          cd aaa
                           mv $filename lambda_function.py
                           zip -r code.zip lambda_function.py
                           aws lambda update-function-code --function-name "$functionArn" --zip-file fileb://aaa/code.zip
                           rm code.zip lambda_function.py
+                          cd ..
                     else
                       echo "Lambda 函数不存在"
                     fi
