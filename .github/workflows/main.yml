@@ -63,7 +63,12 @@ jobs:
                       cd aaa
                       mv $filename lambda_function.py
                       zip -r code.zip lambda_function.py
-                      aws lambda update-function-code --function-name "$functionArn" --zip-file fileb://code.zip
+                      response=$(aws lambda update-function-code \
+                        --function-name "$functionArn" \
+                        --zip-file fileb://code.zip \
+                        --output json)
+                      function_name=$(echo $response | python3 -c "import sys, json; print(json.load(sys.stdin)['FunctionName'])")
+                      echo "Updated Lambda function: $function_name success"
                       rm code.zip lambda_function.py
                       cd ..
                     else
