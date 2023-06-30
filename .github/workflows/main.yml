@@ -11,6 +11,4 @@ jobs:
     steps:
       - name: Display event information
         run: |
-          echo "event name is: ${{ github.event_name }}"
-          echo "event type is: ${{ github.event }}"
-          echo "event is: ${{ toJson(github.event) }}"
+          echo "event is: ${{ toJson(github) }}"
