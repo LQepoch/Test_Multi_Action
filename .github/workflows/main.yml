@@ -40,5 +40,5 @@ jobs:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
       # Example 1
-      - run: echo "event name is:" ${{ github.event_name }} 
+      - run: echo "event name is:" ${{ github }} 
       - run: echo "event type is:" ${{ github.event.action }} 
