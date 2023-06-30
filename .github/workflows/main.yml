@@ -60,7 +60,7 @@ jobs:
                     if [ -n "$functionArn" ]; then
                       echo "Lambda 函数存在"
                         # 更新 Lambda 函数代码
-                          mv aaa.py lambda_function.py
+                          mv $filename lambda_function.py
                           zip -r code.zip lambda_function.py
                           aws lambda update-function-code --function-name "$functionArn" --zip-file fileb://aaa/code.zip
                           rm code.zip lambda_function.py
