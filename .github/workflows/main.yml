@@ -51,3 +51,6 @@ jobs:
             mv "$file" "$(dirname "$file")/$new_filename"
             echo "$filename was renamed to $new_filename"
           done
+      - name: 开始修改文件
+        run: |
+          ls
