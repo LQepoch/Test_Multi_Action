@@ -31,30 +31,27 @@ jobs:
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
+          mkdir aaa
+
       - name: all_modified_files的文件
         run: |
             for file in ${{ steps.changed-files.outputs.all_modified_files }}; do
                 echo "$file" >> origin_all_modified_files.txt
+                mv $file aaa/
                 filename=$(basename "$file")
                 echo "$filename" >> abs_all_modified_files.txt
                 if [[ $filename == *.py ]]; then
                   echo "The file $filename is in .py format."
-
+                  rm aaa/$filename
                 else
                   echo "The file $filename is not in .py format."
+                  rm aaa/$filename
                 fi
             done
+          
             cat origin_all_modified_files.txt
             echo "------"
             cat abs_all_modified_files.txt
-
-
-      - name: 读取 origin_all_modified_files.txt 并下载文件
-        run: |
-          cat origin_all_modified_files.txt | while read -r file; do
-            git sparse-checkout set "$file"
-          done
-          ls
 
       - name: deleted_files的文件
         run: |
