@@ -53,11 +53,9 @@ jobs:
                   echo "The file $filename is in .py format."
                   filename_replace=$(echo "$filename" | sed 's/\.py$//')
                   response=$(aws lambda get-function --function-name "$filename_replace" --output json)
-                  function_name=$(echo $response | python3 -c "import sys, json; print(json.load(sys.stdin))")
-                  echo "Lambda function: $function_name is in the account"
-          
+
                   # 判断返回的 JSON 是否包含有效的函数信息
-                  if [ -n "$(echo "$response" | jq '.Configuration')" ]; then
+                  if [ -n "$(echo "$response" | jq '.Configuration.FunctionArn')" ]; then
                     # 提取 FunctionArn 字段的值
                     functionArn=$(echo "$response" | jq -r '.Configuration.FunctionArn')
                     # 检查 FunctionArn 是否不为空
