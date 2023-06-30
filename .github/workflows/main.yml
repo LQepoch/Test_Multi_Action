@@ -22,6 +22,14 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v37
 
+
+      - name: 配置AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
       # NOTE: `since_last_remote_commit: true` is implied by default and falls back to the previous local commit.
 
       - name: 所有改变的文件
@@ -30,53 +38,35 @@ jobs:
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
-      - name: 只Added的文件
-        run: |
-          for file in ${{ steps.changed-files.outputs.added_files }}; do
-            echo "$file" >> origin_Added_Modified.txt
-            filename=$(basename "$file")
-            echo "$filename" >> Added_Renamed_Modified.txt
-          done
-          cat origin_Added_Modified.txt
-
-      - name: 只Modified的文件
-        run: |
-          for file in ${{ steps.changed-files.outputs.modified_files }}; do
-            echo "$file" >> origin_Added_Modified.txt
-            filename=$(basename "$file")
-            echo "$filename" >> Added_Renamed_Modified.txt
-          done
-          cat origin_Added_Modified.txt
-
-      - name: 只Deleted的文件
-        run: |
-          for file in ${{ steps.changed-files.outputs.deleted_files }}; do
-            filename=$(basename "$file")
-            if grep -q "$filename" Added_Renamed_Modified.txt; then
-              echo "Filename $filename already exists in Added_Modified.txt"
-              exit 0
-            fi
-            echo "$filename" >> Deleted.txt
-          done
-          cat Deleted.txt
-
-      - name: 得到绝对名称
-        run: |
-          while IFS= read -r line; do
-            echo "$(basename "$line")"
-          done < Added_Renamed_Modified.txt > modified_file_names.txt
-          cat modified_file_names.txt
-
       - name: all_modified_files的文件
         run: |
             for file in ${{ steps.changed-files.outputs.all_modified_files }}; do
                 echo "$file" >> origin_all_modified_files.txt
                 filename=$(basename "$file")
                 echo "$filename" >> abs_all_modified_files.txt
+                if [[ $filename == *.py ]]; then
+                  echo "The file $filename is in .py format."
+
+                else
+                  echo "The file $filename is not in .py format."
+                fi
             done
             cat origin_all_modified_files.txt
             echo "------"
             cat abs_all_modified_files.txt
+      - name: 只下载更新的文件
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            origin_all_modified_files.txt
+          sparse-checkout-cone-mode: false
+
+      - name: 读取 origin_all_modified_files.txt 并下载文件
+        run: |
+          cat origin_all_modified_files.txt | while read -r file; do
+            git sparse-checkout set "$file"
+          done
+          ls
 
       - name: deleted_files的文件
         run: |
@@ -90,19 +80,37 @@ jobs:
             cat abs_deleted_files.txt
 
 
-
-      - name: 开始修改文件
+      - name: Check Lambda function existence and update/create if needed
+        id: check-functions
         run: |
-          for file in ${{ steps.changed-files.outputs.modified_files }}; do
-            filename=$(basename "$file")
-            mv "$file" "$(dirname "$file")/${{ env.NEW_FILENAME }}"
-            echo "$filename was renamed to ${{ env.NEW_FILENAME }}"
-            ls
-            rm "$(dirname "$file")/${{ env.NEW_FILENAME }}"
+          # Define the list of Lambda functions to check
+          functions=("Function1" "Function2" "Function3")
+
+          # Loop through the functions and check existence
+          for function in "${functions[@]}"
+          do
+            response=$(aws lambda get-function --function-name "$function" --output json)
+            if [[ "${response}" == *"FunctionNotFound"* ]]; then
+              echo "::set-output name=${function}_exists::false"
+            else
+              echo "::set-output name=${function}_exists::true"
+            fi
           done
-      - name: 只下载更新的文件
-        uses: actions/checkout@v3
-        with:
-          sparse-checkout: |
-            README.md
-          sparse-checkout-cone-mode: false
+
+      - name: Create or update Lambda functions
+        run: |
+          # Loop through the functions and create/update as necessary
+          for function in "${functions[@]}"
+          do
+            exists="${{ steps.check-functions.outputs.${function}_exists }}"
+            if [[ "$exists" == 'false' ]]; then
+              # Create the Lambda function
+              echo "Creating $function"
+              # Add the create-function command here with the appropriate parameters
+            else
+              # Update the Lambda function code
+              echo "Updating $function"
+              # Add the update-function-code command here with the appropriate parameters
+            fi
+          done    
+
