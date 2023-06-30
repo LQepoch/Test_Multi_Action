@@ -11,4 +11,5 @@ jobs:
     steps:
       - name: Display event information
         run: |
+          echo "Webhook event name: ${{ github.event_name }}"
           echo "event is: ${{ toJson(github) }}"
