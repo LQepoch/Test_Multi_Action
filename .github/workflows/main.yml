@@ -20,24 +20,34 @@ jobs:
 
       # NOTE: `since_last_remote_commit: true` is implied by default and falls back to the previous local commit.
 
-      - name: List all changed files
+      - name: 所有改变的文件
         run: |
           echo "Actor: ${{ toJson(steps) }}"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
-      - name: List Only modified_files
+
+      - name: 只Modified的文件
         run: |
           for file in ${{ steps.changed-files.outputs.modified_files }}; do
             echo "$file was modified_files"
           done
-      - name: List Only deleted_files
+      - name: 只Deleted的文件
         run: |
           for file in ${{ steps.changed-files.outputs.deleted_files }}; do
             echo "$file was deleted_files"
           done
-      - name: List Only added_files
+      - name: 只Added的文件
         run: |
           for file in ${{ steps.changed-files.outputs.added_files }}; do
             echo "$file was changed"
+          done
+
+      - name: 开始修改文件
+        run: |
+          for file in ${{ steps.changed-files.outputs.modified_files }}; do
+            filename=$(basename "$file")
+            new_filename="lam.py"
+            mv "$file" "$(dirname "$file")/$new_filename"
+            echo "$filename was renamed to $new_filename"
           done
