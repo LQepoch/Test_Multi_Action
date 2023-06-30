@@ -7,7 +7,9 @@ on:
       
 jobs:
   bar:
-    runs-on: ["ubuntu-latest"]
+    runs-on: ubuntu-latest
     steps:
-      - run: echo "event name is:" ${{ github }} 
-      - run: echo "event type is:" ${{ github.event.action }} 
+      - name: Display event information
+        run: |
+          echo "event name is: ${{ github.event_name }}"
+          echo "event type is: ${{ github.event }}"
