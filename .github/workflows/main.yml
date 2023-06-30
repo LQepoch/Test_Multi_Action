@@ -16,7 +16,8 @@ jobs:
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-
+      - name: 只下载更新的文件
+        uses: actions/checkout@v3
       # Example 1
       - name: Get changed files
         id: changed-files
@@ -46,12 +47,7 @@ jobs:
             cat origin_all_modified_files.txt
             echo "------"
             cat abs_all_modified_files.txt
-      - name: 只下载更新的文件
-        uses: actions/checkout@v3
-        with:
-          sparse-checkout: |
-            origin_all_modified_files.txt
-          sparse-checkout-cone-mode: false
+
 
       - name: 读取 origin_all_modified_files.txt 并下载文件
         run: |
