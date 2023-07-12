@@ -9,17 +9,10 @@ jobs:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Test changed-files
     steps:
-      - name: Set environment variable
-        run: echo "lq-open" > BUCKET_NAME
-        shell: bash
-
-      - name: Print environment variable
-        run: echo ${{ env.BUCKET_NAME }}
-
       - name: 检查架构
         run: |
-          echo "$NEW_FILENAME"
-          echo "$BUCKET_NAME"
+          echo ${{ env.GITHUB_REPOSITORY }}
+          echo ${{ env.BUCKET_NAME }}
       - name: 只下载更新的文件
         uses: actions/checkout@v3
 
