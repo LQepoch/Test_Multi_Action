@@ -38,7 +38,7 @@ jobs:
           echo "Actor: ${{ toJson(steps) }}"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file"
-            aws s3 cp $file $REMOTE_PATH
+            aws s3 cp $file "$REMOTE_PATH"
           done
           mkdir aaa
 
@@ -50,5 +50,5 @@ jobs:
             echo $S3_BUCKET
             for file in ${{ steps.changed-files.outputs.deleted_files }}; do
                 echo "$file"
-                aws s3api delete-object --bucket S3_BUCKET --key $S3_PATH
+                aws s3api delete-object --bucket "$S3_BUCKET" --key "$S3_PATH"
             done
