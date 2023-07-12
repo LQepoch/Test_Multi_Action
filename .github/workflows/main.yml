@@ -38,7 +38,7 @@ jobs:
             for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
                 cp $file aaa
             done
-      - name: 新增的文件
+      - name: 列出aaa文件夹下的文件
         run: |
             ls -l aaa
 
