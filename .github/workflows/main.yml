@@ -32,18 +32,18 @@ jobs:
       - name: Get Change Files
         id: changed-files
         uses: tj-actions/changed-files@v37
-      - name: 定义s3路径
+
+      - name: 打印输出All修改
         run: |
+          echo "Actor: ${{ toJson(steps) }}"
 
       - name: List adn Upload All Change Files
         run: |
-          echo "Actor: ${{ toJson(steps) }}"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file"          
             REMOTE_PATH="s3://$BUCKET_NAME/$GITHUB_REPOSITORY/$file"
             aws s3 cp $file $REMOTE_PATH
           done
-          mkdir aaa
 
       - name:  List and Delete All Deleted Files
         run: |
