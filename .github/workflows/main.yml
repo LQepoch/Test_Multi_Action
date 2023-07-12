@@ -7,14 +7,13 @@ on:
 
 env:
   GITHUB_REPOSITORY: ${{ github.repository }}
-
+  $BUCKET_NAME: ${{ env.BUCKET_NAME }}
 jobs:
   job2:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Test changed-files
     steps:
       - name: 检查架构
-
         run: |
           echo $GITHUB_REPOSITORY
           echo $BUCKET_NAME
