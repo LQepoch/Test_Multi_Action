@@ -42,6 +42,20 @@ jobs:
         run: |
             ls -l aaa
 
+      - name:  List All deleted_files
+        run: |
+            for file in ${{ steps.changed-files.outputs.deleted_files }}; do
+                echo "$file"
+            done
+
+      - name: 列出Delete Files
+        run: |
+            for file in ${{ steps.changed-files.outputs.deleted_files }}; do
+                echo "$file"
+                filename=$(basename "$file")
+                echo "$filename"
+            done
+
       - name: deleted_files的文件
         run: |
             for file in ${{ steps.changed-files.outputs.deleted_files }}; do
