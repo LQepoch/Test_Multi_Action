@@ -4,15 +4,18 @@ on:
   push:
     branches:
       - master
-env:
-  NEW_FILENAME: ${{ env.GITHUB_REPOSITORY }}
-  BUCKET_NAME: lq-open
-
 jobs:
   job2:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Test changed-files
     steps:
+      - name: Set environment variable
+        run: echo "lq-open" >> BUCKET_NAME
+        shell: bash
+
+      - name: Print environment variable
+        run: echo ${{ env.BUCKET_NAME }}
+
       - name: 检查架构
         run: |
           echo "$NEW_FILENAME"
@@ -36,7 +39,7 @@ jobs:
           echo "Actor: ${{ toJson(steps) }}"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file"
-            aws s3 cp $file s3://$BUCKET_NAME/${{ env.GITHUB_REPOSITORY }}/$file
+            aws s3 cp $file s3://${{ env.BUCKET_NAME }}/${{ env.GITHUB_REPOSITORY }}/$file
           done
           mkdir aaa
 
@@ -44,5 +47,5 @@ jobs:
         run: |
             for file in ${{ steps.changed-files.outputs.deleted_files }}; do
                 echo "$file"
-                aws s3api delete-object --bucket $BUCKET_NAME --key ${{ env.GITHUB_REPOSITORY }}/$file
+                aws s3api delete-object --bucket ${{ env.BUCKET_NAME }} --key ${{ env.GITHUB_REPOSITORY }}/$file
             done
