@@ -10,7 +10,7 @@ jobs:
     name: Test changed-files
     steps:
       - name: Set environment variable
-        run: echo "lq-open" >> BUCKET_NAME
+        run: echo lq-open >> BUCKET_NAME
         shell: bash
 
       - name: Print environment variable
