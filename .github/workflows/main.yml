@@ -4,18 +4,21 @@ on:
   push:
     branches:
       - master
+
+env:
+  GITHUB_REPOSITORY: ${{ github.repository }}
+  BUCKET_NAME: lq-open
+
 jobs:
   job2:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Test changed-files
     steps:
       - name: 检查架构
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          BUCKET_NAME: lq-open
+
         run: |
-          echo ${{ env.GITHUB_REPOSITORY }}
-          echo ${{ env.BUCKET_NAME }}
+          echo $GITHUB_REPOSITORY
+          echo $BUCKET_NAME
       - name: 只下载更新的文件
         uses: actions/checkout@v3
 
@@ -31,7 +34,7 @@ jobs:
         uses: tj-actions/changed-files@v37
       - name: 定义s3路径
         run: |
-          REMOTE_PATH="s3://${{ secrets.AWS_REGION }}/${{ secrets.AWS_REGION }}/$file"
+          REMOTE_PATH="s3://$BUCKET_NAME/$GITHUB_REPOSITORY/$file"
           echo $REMOTE_PATH
       - name: List adn Upload All Change Files
         run: |
@@ -44,8 +47,8 @@ jobs:
 
       - name:  List and Delete All Deleted Files
         run: |
-            S3_BUCKET=${{ env.BUCKET_NAME }}
-            S3_PATH="${{ env.GITHUB_REPOSITORY }}/$file"
+            S3_BUCKET=$BUCKET_NAME
+            S3_PATH="$GITHUB_REPOSITORY/$file"
             echo S3_BUCKET
             echo $S3_BUCKET
             for file in ${{ steps.changed-files.outputs.deleted_files }}; do
