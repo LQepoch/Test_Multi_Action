@@ -5,13 +5,18 @@ on:
     branches:
       - master
 env:
-  NEW_FILENAME: "lambda_function.py"
+  NEW_FILENAME: ${{ env.GITHUB_REPOSITORY }}
+  BUCKET_NAME: lq-open
 
 jobs:
   job2:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: Test changed-files
     steps:
+      - name: 检查架构
+        run: |
+          echo "$NEW_FILENAME"
+          echo "$BUCKET_NAME"
       - name: 只下载更新的文件
         uses: actions/checkout@v3
 
@@ -26,39 +31,18 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v37
 
-      - name: List All Change Files
+      - name: List adn Upload All Change Files
         run: |
           echo "Actor: ${{ toJson(steps) }}"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file"
-            aws s3 cp $file s3://lq-open/$file
+            aws s3 cp $file s3://$BUCKET_NAME/${{ env.GITHUB_REPOSITORY }}/$file
           done
           mkdir aaa
 
-      - name:  List adn Delete All deleted_files
+      - name:  List and Delete All Deleted Files
         run: |
             for file in ${{ steps.changed-files.outputs.deleted_files }}; do
                 echo "$file"
-                aws s3api delete-object --bucket lq-open --key $file
+                aws s3api delete-object --bucket $BUCKET_NAME --key ${{ env.GITHUB_REPOSITORY }}/$file
             done
-
-      - name: 列出Delete Files
-        run: |
-            for file in ${{ steps.changed-files.outputs.deleted_files }}; do
-                echo "$file"
-                filename=$(basename "$file")
-                echo "$filename"
-            done
-
-      - name: deleted_files的文件
-        run: |
-            for file in ${{ steps.changed-files.outputs.deleted_files }}; do
-                echo "$file" >> origin_deleted_files.txt
-                filename=$(basename "$file")
-                echo "$filename" >> abs_deleted_files.txt
-            done
-            cat origin_deleted_files.txt
-            echo "------"
-            cat abs_deleted_files.txt
-
-                 # rm aaa/$filename
