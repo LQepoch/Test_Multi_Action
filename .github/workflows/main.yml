@@ -28,9 +28,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: 打印输出All修改
+      - name: Get Change Files
         id: changed-files
         uses: tj-actions/changed-files@v37
+
+      - name: 打印输出All修改
         run: |
           echo "Actor: ${{ toJson(steps) }}"
 
