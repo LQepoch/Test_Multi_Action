@@ -31,7 +31,7 @@ jobs:
         uses: tj-actions/changed-files@v37
       - name: 定义s3路径
         run: |
-          REMOTE_PATH="s3://${{ env.BUCKET_NAME }}/${{ env.GITHUB_REPOSITORY }}/$file"
+          REMOTE_PATH="s3://${{ secrets.AWS_REGION }}/${{ secrets.AWS_REGION }}/$file"
           echo $REMOTE_PATH
       - name: List adn Upload All Change Files
         run: |
