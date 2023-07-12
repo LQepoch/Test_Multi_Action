@@ -10,6 +10,9 @@ jobs:
     name: Test changed-files
     steps:
       - name: 检查架构
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          BUCKET_NAME: lq-open
         run: |
           echo ${{ env.GITHUB_REPOSITORY }}
           echo ${{ env.BUCKET_NAME }}
