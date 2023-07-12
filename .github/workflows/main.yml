@@ -25,7 +25,10 @@ jobs:
       - name: Get Change Files
         id: changed-files
         uses: tj-actions/changed-files@v37
-
+      - name: Run a step if my-file.txt was modified
+        if: contains(steps.changed-files.outputs.modified_files, 'my-file.txt')
+        run: |
+          echo "my-file.txt file has been modified."
       - name: List All Change Files
         run: |
           echo "Actor: ${{ toJson(steps) }}"
@@ -33,10 +36,7 @@ jobs:
             echo "$file"
           done
           mkdir aaa
-      - name: Run a step if my-file.txt was modified
-        if: contains(steps.changed-files.outputs.modified_files, 'my-file.txt')
-        run: |
-          echo "my-file.txt file has been modified."
+
 
       - name: deleted_files的文件
         run: |
